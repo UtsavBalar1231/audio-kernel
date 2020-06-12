@@ -2129,11 +2129,15 @@ static int wsa_macro_rx_mux_put(struct snd_kcontrol *kcontrol,
 		"%s: mux input: %d, mux output: %d, bit: %d\n",
 		__func__, rx_port_value, widget->shift, bit_input);
 
+	dev_dbg(wsa_dev,
+		"%s: mux input: %d, mux output: %d, bit: %d\n",
+		__func__, rx_port_value, widget->shift, bit_input);
+
 	switch (rx_port_value) {
 	case 0:
 		if (wsa_priv->active_ch_cnt[aif_rst]) {
 			clear_bit(bit_input,
-				  &wsa_priv->active_ch_mask[aif_rst]);
+				&wsa_priv->active_ch_mask[aif_rst]);
 			wsa_priv->active_ch_cnt[aif_rst]--;
 		}
 		break;

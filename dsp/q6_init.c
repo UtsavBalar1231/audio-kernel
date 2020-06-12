@@ -16,6 +16,7 @@ GNU General Public License for more details.
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include "q6_init.h"
+#include <dsp/msm-cirrus-playback.h>
 
 static int __init audio_q6_init(void)
 {
@@ -36,6 +37,7 @@ static int __init audio_q6_init(void)
 	crus_sp_init();
 #endif
 	msm_mdf_init();
+	crus_sp_init();
 	voice_mhi_init();
 	elliptic_driver_init();
 /* for mius start */
@@ -48,6 +50,7 @@ static int __init audio_q6_init(void)
 
 static void __exit audio_q6_exit(void)
 {
+	crus_sp_exit();
 	msm_mdf_exit();
 #ifdef CONFIG_MSM_CSPL
 	crus_sp_exit();
