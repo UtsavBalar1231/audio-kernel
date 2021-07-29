@@ -13,6 +13,7 @@ export
 endif
 ifeq ($(CONFIG_ARCH_KONA), y)
 include $(srctree)/techpack/audio/config/konaauto.conf
+export $(shell sed 's/=.*//' $(srctree)/techpack/audio/config/konaauto.conf)
 endif
 ifeq ($(CONFIG_ARCH_SDM660), y)
 include $(srctree)/techpack/audio/config/sdm660auto.conf
