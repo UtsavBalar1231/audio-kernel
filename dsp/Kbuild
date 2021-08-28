@@ -241,6 +241,11 @@ ifneq (,$(filter $(TARGET_PRODUCT), picasso picassoin))
         CDEFINES += -DTFA_ADSP_SUPPORTED
 endif
 
+# TEST FOR UMI
+#ifneq (,$(filter $(TARGET_PRODUCT), umi))
+        CDEFINES += -DAUDIO_FORCE_RESTART_ADSP
+#endif
+
 KBUILD_CPPFLAGS += $(CDEFINES)
 
 # Currently, for versions of gcc which support it, the kernel Makefile
@@ -271,9 +276,18 @@ ifeq ($(KERNEL_BUILD), 0)
 KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/audio-kernel/ipc/Module.symvers
 endif
 
-ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT),lmi lmiin lmiinpro cas umi cmi apollo alioth thyme))
+ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT),lmi lmiin lmiinpro cas umi cmi apollo alioth thyme enuma elish))
 	CDEFINES += -DAUDIO_SM8250_FLAG
 endif
+
+
+ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), enuma))
+    CDEFINES += -DCONFIG_TARGET_PRODUCT_ENUMA
+endif
+ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), elish))
+    CDEFINES += -DCONFIG_TARGET_PRODUCT_ELISH
+endif
+
 
 ifeq ($(KERNEL_BUILD), 1)
 	obj-y += codecs/
