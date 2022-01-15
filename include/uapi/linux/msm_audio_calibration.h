@@ -105,13 +105,11 @@ enum {
 	ADM_LSM_AUDPROC_CAL_TYPE,
 	ADM_LSM_AUDPROC_PERSISTENT_CAL_TYPE,
 	ADM_AUDPROC_PERSISTENT_CAL_TYPE,
-	AFE_FB_SPKR_PROT_V4_EX_VI_CAL_TYPE,
 	MAX_CAL_TYPES,
 };
 
 #define AFE_FB_SPKR_PROT_TH_VI_CAL_TYPE AFE_FB_SPKR_PROT_TH_VI_CAL_TYPE
 #define AFE_FB_SPKR_PROT_EX_VI_CAL_TYPE AFE_FB_SPKR_PROT_EX_VI_CAL_TYPE
-#define AFE_FB_SPKR_PROT_V4_EX_VI_CAL_TYPE AFE_FB_SPKR_PROT_V4_EX_VI_CAL_TYPE
 
 #define AFE_SIDETONE_IIR_CAL_TYPE AFE_SIDETONE_IIR_CAL_TYPE
 
@@ -125,7 +123,6 @@ enum {
 
 #define TOPOLOGY_SPECIFIC_CHANNEL_INFO
 #define MSM_SPKR_PROT_SPV3
-#define MSM_SPKR_PROT_SPV4
 
 enum {
 	VERSION_0_0,
@@ -376,16 +373,6 @@ struct audio_cal_info_sp_ex_vi_param {
 	int32_t		resis_q24[SP_V2_NUM_MAX_SPKRS];
 	int32_t		qmct_q24[SP_V2_NUM_MAX_SPKRS];
 	int32_t		status[SP_V2_NUM_MAX_SPKRS];
-};
-
-struct audio_cal_info_sp_v4_ex_vi_param {
-	int32_t		ftm_re_q24[SP_V2_NUM_MAX_SPKRS];
-	int32_t		ftm_Bl_q24[SP_V2_NUM_MAX_SPKRS];
-	int32_t		ftm_Rms_q24[SP_V2_NUM_MAX_SPKRS];
-	int32_t		ftm_Kms_q24[SP_V2_NUM_MAX_SPKRS];
-	int32_t		ftm_freq_q20[SP_V2_NUM_MAX_SPKRS];
-	int32_t		ftm_Qms_q24[SP_V2_NUM_MAX_SPKRS];
-	uint32_t	status[SP_V2_NUM_MAX_SPKRS];
 };
 
 struct audio_cal_info_sp_th_vi_param {
@@ -810,7 +797,6 @@ struct audio_cal_sp_th_vi_v_vali_param {
 	struct audio_cal_header				hdr;
 	struct audio_cal_type_sp_th_vi_v_vali_param	cal_type;
 };
-
 struct audio_cal_type_sp_ex_vi_param {
 	struct audio_cal_type_header			cal_hdr;
 	struct audio_cal_data				cal_data;
@@ -821,16 +807,4 @@ struct audio_cal_sp_ex_vi_param {
 	struct audio_cal_header				hdr;
 	struct audio_cal_type_sp_ex_vi_param		cal_type;
 };
-
-struct audio_cal_type_sp_v4_ex_vi_param {
-	struct audio_cal_type_header			cal_hdr;
-	struct audio_cal_data				cal_data;
-	struct audio_cal_info_sp_v4_ex_vi_param		cal_info;
-};
-
-struct audio_cal_sp_v4_ex_vi_param {
-	struct audio_cal_header				hdr;
-	struct audio_cal_type_sp_v4_ex_vi_param		cal_type;
-};
-
 #endif /* _UAPI_MSM_AUDIO_CALIBRATION_H */

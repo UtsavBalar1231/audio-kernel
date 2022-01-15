@@ -936,7 +936,6 @@ ssize_t audio_in_write(struct file *file,
 
 int audio_in_release(struct inode *inode, struct file *file)
 {
-	unsigned long flags = 0;
 	struct q6audio_in  *audio = file->private_data;
 
 	pr_info("%s: session id %d\n", __func__, audio->ac->session);
@@ -944,11 +943,11 @@ int audio_in_release(struct inode *inode, struct file *file)
 	audio_in_disable(audio);
 	q6asm_audio_client_free(audio->ac);
 	mutex_unlock(&audio->lock);
-	spin_lock_irqsave(&enc_dec_lock, flags);
+	spin_lock(&enc_dec_lock);
 	kfree(audio->enc_cfg);
 	kfree(audio->codec_cfg);
 	kfree(audio);
 	file->private_data = NULL;
-	spin_unlock_irqrestore(&enc_dec_lock, flags);
+	spin_unlock(&enc_dec_lock);
 	return 0;
 }
