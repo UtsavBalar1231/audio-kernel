@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
 #define DEBUG
 #include <linux/module.h>
@@ -21,8 +22,6 @@
 #include <asoc/wcd-mbhc-v2-api.h>
 #include "wcd938x-registers.h"
 #include "internal.h"
-
-#include "send_data_to_xlog.h"//LXY
 
 #define WCD938X_ZDET_SUPPORTED          true
 /* Z value defined in milliohm */
@@ -661,7 +660,6 @@ right_ch_impedance:
 		dev_dbg(component->dev, "%s: stereo plug type detected\n",
 			__func__);
 		mbhc->hph_type = WCD_MBHC_HPH_STEREO;
-		send_mbhc_impedance_to_xlog(*zl, *zr);
 	} else {
 		dev_dbg(component->dev, "%s: MONO plug type detected\n",
 			__func__);

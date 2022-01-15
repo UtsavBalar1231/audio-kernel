@@ -237,11 +237,11 @@ static int tx_macro_mclk_enable(struct tx_macro_priv *tx_priv,
 		}
 		bolero_clk_rsc_fs_gen_request(tx_priv->dev,
 					true);
-		regcache_mark_dirty(regmap);
-		regcache_sync_region(regmap,
-				TX_START_OFFSET,
-				TX_MAX_OFFSET);
 		if (tx_priv->tx_mclk_users == 0) {
+			regcache_mark_dirty(regmap);
+			regcache_sync_region(regmap,
+					TX_START_OFFSET,
+					TX_MAX_OFFSET);
 			/* 9.6MHz MCLK, set value 0x00 if other frequency */
 			regmap_update_bits(regmap,
 				BOLERO_CDC_TX_TOP_CSR_FREQ_MCLK, 0x01, 0x01);
@@ -706,9 +706,6 @@ static int tx_macro_tx_mixer_put(struct snd_kcontrol *kcontrol,
 
 	if (!tx_macro_get_data(component, &tx_dev, &tx_priv, __func__))
 		return -EINVAL;
-
-	dev_err(tx_dev, "%s: id:%d(%s) enable:%d active_ch_cnt:%d\n", __func__,
-		dai_id, widget->name, enable, tx_priv->active_ch_cnt[dai_id]);
 
 	if (enable) {
 		set_bit(dec_id, &tx_priv->active_ch_mask[dai_id]);
@@ -1234,8 +1231,6 @@ static int tx_macro_get_channel_map(struct snd_soc_dai *dai,
 		dev_err(tx_dev, "%s: Invalid AIF\n", __func__);
 		break;
 	}
-	dev_err(tx_dev, "%s: id:%d(%s) ch_mask:0x%x active_ch_cnt:%d active_mask: 0x%lx\n",
-		__func__, dai->id, dai->name, *tx_slot, *tx_num, tx_priv->active_ch_mask[dai->id]);
 	return 0;
 }
 
