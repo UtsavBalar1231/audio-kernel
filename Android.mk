@@ -23,9 +23,9 @@ include $(MY_LOCAL_PATH)/asoc/Android.mk
 include $(MY_LOCAL_PATH)/asoc/codecs/Android.mk
 #include $(MY_LOCAL_PATH)/asoc/codecs/tfa98xx/Android.mk
 ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), enuma))
-include $(MY_LOCAL_PATH)/asoc/codecs/cs35l41_v2/Android.mk
+include $(MY_LOCAL_PATH)/asoc/codecs/cs35l41_k81/Android.mk
 else ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), elish))
-include $(MY_LOCAL_PATH)/asoc/codecs/cs35l41_v2/Android.mk
+include $(MY_LOCAL_PATH)/asoc/codecs/cs35l41_k81/Android.mk
 else
 include $(MY_LOCAL_PATH)/asoc/codecs/cs35l41/Android.mk
 endif

@@ -2,6 +2,7 @@
  * cs35l41.c -- CS35l41 ALSA SoC audio driver
  *
  * Copyright 2018 Cirrus Logic, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * Author:	David Rhodes	<david.rhodes@cirrus.com>
  *		Brian Austin	<brian.austin@cirrus.com>
@@ -642,6 +643,8 @@ static const struct snd_kcontrol_new cs35l41_aud_controls[] = {
 			 0, 7, 0),
 	SOC_SINGLE("Boost Class-H Tracking Enable", CS35L41_BSTCVRT_VCTRL2, 0, 1, 0),
 	SOC_SINGLE("Boost Target Voltage", CS35L41_BSTCVRT_VCTRL1, 0, 0xAA, 0),
+	//Convert hex to int, eg. 0x3F73 --> 16243, tinymix 'Noise Gate' 16243
+	SOC_SINGLE("Noise Gate", CS35L41_NG_CFG, 0, 0x3FFF, 0),
 	SOC_SINGLE("Class-H Head Room", CS35L41_CLASSH_CFG, 16, 0x7F, 0),
 	SOC_ENUM("PCM Soft Ramp", pcm_sft_ramp),
 	SOC_SINGLE_EXT("DSP Booted", SND_SOC_NOPM, 0, 1, 0,
@@ -1370,7 +1373,7 @@ static int cs35l41_pcm_hw_params(struct snd_pcm_substream *substream,
 	asp_wl = params_width(params);
 	asp_width = params_physical_width(params);
 
-#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH) || defined(CONFIG_TARGET_PRODUCT_ENUMA)
+#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH) || defined(CONFIG_TARGET_PRODUCT_ENUMA) || defined(CONFIG_TARGET_PRODUCT_PSYCHE)
 	cs35l41_component_set_sysclk(dai->component, 0, 0, 8 * rate * asp_width, 0);
 #else
 	cs35l41_component_set_sysclk(dai->component, 0, 0, 2 * rate * asp_width, 0);
@@ -1442,7 +1445,7 @@ static int cs35l41_pcm_startup(struct snd_pcm_substream *substream,
 	//struct snd_soc_codec *codec = dai->codec;
 	pr_debug("++++>CSPL: %s.\n", __func__);
 
-#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH) || defined(CONFIG_TARGET_PRODUCT_ENUMA)
+#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH) || defined(CONFIG_TARGET_PRODUCT_ENUMA) || defined(CONFIG_TARGET_PRODUCT_PSYCHE)
 	cs35l41_set_dai_fmt(dai, SND_SOC_DAIFMT_CBS_CFS|SND_SOC_DAIFMT_DSP_A);
 #else
 	cs35l41_set_dai_fmt(dai, SND_SOC_DAIFMT_CBS_CFS|SND_SOC_DAIFMT_I2S);
@@ -2276,7 +2279,7 @@ static int cs35l41_dsp_init(struct cs35l41_private *cs35l41)
 	return ret;
 }
 
-#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH)
+#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH) || defined(CONFIG_TARGET_PRODUCT_PSYCHE)
 static int cs35l41_96k_sample_rate_init(struct cs35l41_private *cs35l41)
 {
 	int i;
@@ -2482,7 +2485,7 @@ int cs35l41_probe(struct cs35l41_private *cs35l41,
 	ret = regmap_write(cs35l41->regmap, CS35L41_DAC_MSM_CFG, 0x00100000);
 #endif
 
-	#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH)
+	#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH) || defined(CONFIG_TARGET_PRODUCT_PSYCHE)
 	cs35l41_96k_sample_rate_init(cs35l41);
 	#endif
 	//external clock frequency initialize

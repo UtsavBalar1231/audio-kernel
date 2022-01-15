@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
 #define DEBUG
 #include <linux/clk.h>
@@ -105,6 +106,8 @@
 #define CS35L41_SPEAKER_NAME "cs35l41.2-0040"
 #define CS35L41_RECEIVER_NAME "cs35l41.2-0042"
 #endif
+
+
 #if defined(CONFIG_TARGET_PRODUCT_ENUMA) || defined(CONFIG_TARGET_PRODUCT_ELISH)
 struct snd_soc_dai_link_component cs35l41_codec_components[] = {
        {
@@ -156,6 +159,7 @@ struct snd_soc_dai_link_component cs35l41_codec_components[] = {
 #endif
 };
 #endif
+
 static struct snd_soc_codec_conf cs35l41_codec_conf[] = {
 	{
 		.dev_name	= CS35L41_SPEAKER_NAME,
@@ -168,8 +172,6 @@ static struct snd_soc_codec_conf cs35l41_codec_conf[] = {
 	},
 #endif
 };
-
-
 
 enum {
 	RX_PATH = 0,
@@ -6378,7 +6380,8 @@ static struct snd_soc_dai_link msm_common_dai_links[] = {
 	},
 #ifdef AUDIO_SM8250_FLAG
 	{/* hw:x,30 */
-#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined(CONFIG_TARGET_PRODUCT_ALIOTH)|| defined(CONFIG_TARGET_PRODUCT_ENUMA) || defined(CONFIG_TARGET_PRODUCT_ELISH)
+#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined(CONFIG_TARGET_PRODUCT_ALIOTH)|| defined(CONFIG_TARGET_PRODUCT_ENUMA) || defined(CONFIG_TARGET_PRODUCT_ELISH)\
+		|| defined(CONFIG_TARGET_PRODUCT_PSYCHE)
 		.name = "Tertiary TDM1 Hostless Playback",
 		.stream_name = "Tertiary TDM1 Hostless Playback",
 		.cpu_dai_name = "msm-dai-q6-tdm.36898",
@@ -6650,6 +6653,21 @@ static struct snd_soc_dai_link msm_common_misc_fe_dai_links[] = {
                 /* this dailink has playback support */
                 .ignore_pmdown_time = 1,
                 /* This dainlink has MI2S support */
+                .codec_dai_name = "snd-soc-dummy-dai",
+                .codec_name = "snd-soc-dummy",
+        },
+        { /* hw:x,44 */
+                .name = "Tertiary MI2S_RX Hostless",
+                .stream_name = "Tertiary MI2S_RX Hostless",
+                .cpu_dai_name = "TERT_MI2S_RX_HOSTLESS",
+                .platform_name  = "msm-pcm-hostless",
+                .dynamic = 1,
+                .dpcm_playback = 1,
+                .trigger = {SND_SOC_DPCM_TRIGGER_POST,
+                                        SND_SOC_DPCM_TRIGGER_POST},
+                .no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
+                .ignore_suspend = 1,
+                .ignore_pmdown_time = 1,
                 .codec_dai_name = "snd-soc-dummy-dai",
                 .codec_name = "snd-soc-dummy",
         },
@@ -7272,7 +7290,8 @@ static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
 
 #ifdef AUDIO_SM8250_FLAG  //j1
 static struct snd_soc_dai_link tert_mi2s_rx_cs35l41_dai_links[] = {
-#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS)  || defined(CONFIG_TARGET_PRODUCT_ALIOTH)|| defined(CONFIG_TARGET_PRODUCT_ENUMA) || defined(CONFIG_TARGET_PRODUCT_ELISH)
+#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS)  || defined(CONFIG_TARGET_PRODUCT_ALIOTH)|| defined(CONFIG_TARGET_PRODUCT_ENUMA) || defined(CONFIG_TARGET_PRODUCT_ELISH) \
+ 	|| defined(CONFIG_TARGET_PRODUCT_PSYCHE)
 	{
 		.name = LPASS_BE_TERT_TDM_RX_0,
 		.stream_name = "Tertiary TDM0 Playback",
@@ -8089,6 +8108,7 @@ static struct snd_soc_card *populate_snd_card_dailinks(struct device *dev)
 				    get_hw_version_platform() == HARDWARE_PLATFORM_THYME ||
 				    get_hw_version_platform() == HARDWARE_PLATFORM_ENUMA ||
 				    get_hw_version_platform() == HARDWARE_PLATFORM_ELISH ||
+				    get_hw_version_platform() == HARDWARE_PLATFORM_PSYCHE ||
 					get_hw_version_platform() == HARDWARE_PLATFORM_CAS) {
 					memcpy(msm_kona_dai_links + total_links,
 						tert_mi2s_rx_cs35l41_dai_links,

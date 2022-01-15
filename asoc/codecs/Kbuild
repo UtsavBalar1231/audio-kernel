@@ -77,6 +77,10 @@ ifeq ($(KERNEL_BUILD), 0)
 	endif
 endif
 
+ifeq ($(TARGET_PRODUCT), psyche)
+        CDEFINES += -DCONFIG_TARGET_PRODUCT_PSYCHE
+endif
+
 # As per target team, build is done as follows:
 # Defconfig : build with default flags
 # Slub      : defconfig  + CONFIG_SLUB_DEBUG := y +
@@ -232,9 +236,9 @@ ifeq ($(KERNEL_BUILD), 1)
 	obj-y	+= wcd938x/
 	obj-y	+= bolero/
 ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), enuma))
-	obj-y	+= cs35l41_v2/
+	obj-y	+= cs35l41_k81/
 else ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), elish))
-	obj-y	+= cs35l41_v2/
+	obj-y	+= cs35l41_k81/
 else
 	obj-y	+= cs35l41/
 endif

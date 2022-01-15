@@ -2,6 +2,7 @@
  * wm_adsp.c  --  Wolfson ADSP support
  *
  * Copyright 2012 Wolfson Microelectronics plc
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
  *
@@ -514,7 +515,6 @@ static const char *wm_vpu_fw_text[WM_VPU_NUM_FW] = {
 	[WM_VPU_FW_MISC] =	"Misc",
 };
 
-#ifdef CONFIG_TARGET_PRODUCT_DRACO
 #define CAL_R_DEFAULT       11190
 #else
 #define CAL_R_DEFAULT       8392
@@ -4418,21 +4418,34 @@ static int wm_halo_apply_calibration(struct snd_soc_dapm_widget *w)
 				wm_adsp_k_ctl_put(dsp, "RCV DSP1X Protection cd CAL_STATUS", dsp->cal_status);
 				wm_adsp_k_ctl_put(dsp, "RCV DSP1X Protection cd CAL_CHECKSUM", dsp->cal_chksum);
 				//hold time = 0x96
+#ifndef CONFIG_TARGET_PRODUCT_PSYCHE
 				wm_adsp_k_ctl_put(dsp, "RCV DSP1X Protection 400a4 OFFSET_HOLD_TIME", 150);
+#endif
 				wm_adsp_k_ctl_get(dsp, "RCV DSP1X Protection cd CAL_R");
 				wm_adsp_k_ctl_get(dsp, "RCV DSP1X Protection cd CAL_STATUS");
 				wm_adsp_k_ctl_get(dsp, "RCV DSP1X Protection cd CAL_CHECKSUM");
 				//for ultrasonic
-#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH)
+#if defined(CONFIG_TARGET_PRODUCT_APOLLO) || defined(CONFIG_TARGET_PRODUCT_CAS) || defined (CONFIG_TARGET_PRODUCT_ALIOTH) || defined (CONFIG_TARGET_PRODUCT_PSYCHE)
 				wm_adsp_k_ctl_put(dsp, "RCV DSP1X Protection 400a4 E_FULL_US_BYPASS", 1);
 				wm_adsp_k_ctl_get(dsp, "RCV DSP1X Protection 400a4 E_FULL_US_BYPASS");
+#endif
+
+#ifdef CONFIG_TARGET_PRODUCT_PSYCHE
+			//for lrclk delay
+			wm_adsp_k_ctl_put(dsp, "RCV DSP1X Protection 400a4 MAX_LRCLK_DELAY", 0x20);
 #endif
 			} else {
 				wm_adsp_k_ctl_put(dsp, "DSP1X Protection cd CAL_R", dsp->cal_z);
 				wm_adsp_k_ctl_put(dsp, "DSP1X Protection cd CAL_STATUS", dsp->cal_status);
 				wm_adsp_k_ctl_put(dsp, "DSP1X Protection cd CAL_CHECKSUM", dsp->cal_chksum);
+#ifdef CONFIG_TARGET_PRODUCT_PSYCHE
+                //for lrclk delay
+				wm_adsp_k_ctl_put(dsp, "DSP1X Protection 400a4 MAX_LRCLK_DELAY", 0x20);
 				//hold time = 0x96
+				//wm_adsp_k_ctl_put(dsp, "DSP1X Protection 400a4 OFFSET_HOLD_TIME", 150);
+#else
 				wm_adsp_k_ctl_put(dsp, "DSP1X Protection 400a4 OFFSET_HOLD_TIME", 150);
+#endif
 				wm_adsp_k_ctl_get(dsp, "DSP1X Protection cd CAL_R");
 				wm_adsp_k_ctl_get(dsp, "DSP1X Protection cd CAL_STATUS");
 				wm_adsp_k_ctl_get(dsp, "DSP1X Protection cd CAL_CHECKSUM");

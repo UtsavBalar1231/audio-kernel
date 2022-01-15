@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
-
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/module.h>
@@ -1566,7 +1566,6 @@ int msm_pcm_routing_reg_phy_compr_stream(int fe_id, int perf_mode,
 				352800) && be_bit_width == 32)
 				bit_width = msm_routing_get_bit_width(
 						SNDRV_PCM_FORMAT_S32_LE);
-
 			copp_idx =
 				adm_open(port_id, path_type, sample_rate,
 					 channels, topology, perf_mode,
@@ -1919,6 +1918,10 @@ int msm_pcm_routing_reg_phy_stream(int fedai_id, int perf_mode,
 				&& be_bit_width == 32)
 				bits_per_sample = msm_routing_get_bit_width(
 							SNDRV_PCM_FORMAT_S32_LE);
+			if((i == MSM_BACKEND_DAI_TERT_TDM_RX_0) && (fe_dai_app_type_cfg[fedai_id][session_type][i].channel != 0)){
+				channels = fe_dai_app_type_cfg[fedai_id][session_type][i].channel;
+				pr_debug("%s before adm_open change fe_dai_app_type_cfg-> channel to %d!!\n",__func__, channels);
+			}
 			copp_idx = adm_open(port_id, path_type,
 					    sample_rate, channels, topology,
 					    perf_mode, bits_per_sample,
@@ -28586,7 +28589,6 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"SEC_MI2S_UL_HL", NULL, "SEC_MI2S_TX"},
 	{"SEC_MI2S_RX", NULL, "SEC_MI2S_DL_HL"},
 	{"PRI_MI2S_RX", NULL, "PRI_MI2S_DL_HL"},
-	{"TERT_MI2S_RX", NULL, "TERT_MI2S_DL_HL"},
 	{"QUAT_MI2S_UL_HL", NULL, "QUAT_MI2S_TX"},
 
 	{"PRI_TDM_TX_0_UL_HL", NULL, "PRI_TDM_TX_0"},
@@ -29971,6 +29973,10 @@ static int msm_pcm_routing_prepare(struct snd_pcm_substream *substream)
 				be_bit_width == 32)
 				bits_per_sample = msm_routing_get_bit_width(
 							SNDRV_PCM_FORMAT_S32_LE);
+			if((be_id == MSM_BACKEND_DAI_TERT_TDM_RX_0) && (fe_dai_app_type_cfg[i][session_type][be_id].channel != 0)){
+				channels = fe_dai_app_type_cfg[i][session_type][be_id].channel;
+				pr_debug("%s before adm_open change fe_dai_app_type_cfg-> channel to %d!!\n",__func__, channels);
+			}
 			copp_idx = adm_open(port_id, path_type,
 					    sample_rate, channels, topology,
 					    fdai->perf_mode, bits_per_sample,
