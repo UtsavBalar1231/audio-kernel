@@ -9,21 +9,27 @@ endif
 ifeq ($(KERNEL_BUILD), 1)
 	# These are configurable via Kconfig for kernel-based builds
 	# Need to explicitly configure for Android-based builds
-	AUDIO_BLD_DIR := $(shell pwd)/kernel/msm-4.19
+	AUDIO_BLD_DIR := $(srctree)
 	AUDIO_ROOT := $(AUDIO_BLD_DIR)/techpack/audio
 endif
 
 ifeq ($(KERNEL_BUILD), 0)
-	ifeq ($(CONFIG_ARCH_KONA), y)
-		include $(AUDIO_ROOT)/config/konaauto.conf
-		INCS    +=  -include $(AUDIO_ROOT)/config/konaautoconf.h
-	endif
-	ifeq ($(CONFIG_ARCH_LITO), y)
-		include $(AUDIO_ROOT)/config/litoauto.conf
+	ifeq ($(CONFIG_ARCH_SM8150), y)
+		include $(AUDIO_ROOT)/config/sm8150auto.conf
 		export
-		INCS    +=  -include $(AUDIO_ROOT)/config/litoautoconf.h
+		INCS    +=  -include $(AUDIO_ROOT)/config/sm8150autoconf.h
+	endif
+	ifeq ($(CONFIG_ARCH_SM6150), y)
+		include $(AUDIO_ROOT)/config/sm8150auto.conf
+		export
+		INCS    +=  -include $(AUDIO_ROOT)/config/sm8150autoconf.h
 	endif
 
+	ifeq ($(CONFIG_ARCH_SDMSHRIKE), y)
+		include $(AUDIO_ROOT)/config/sm8150auto.conf
+		export
+		INCS    +=  -include $(AUDIO_ROOT)/config/sm8150autoconf.h
+	endif
 endif
 
 # As per target team, build is done as follows:
@@ -50,31 +56,17 @@ UAPI_INC :=	-I$(AUDIO_ROOT)/include/$(UAPI_DIR)
 COMMON_DIR :=	include
 COMMON_INC :=	-I$(AUDIO_ROOT)/$(COMMON_DIR)
 
-############ WCD938X ############
-
-# for WCD938X Codec
-ifdef CONFIG_SND_SOC_WCD938X
-	WCD938X_OBJS += wcd938x.o
-	WCD938X_OBJS += wcd938x-regmap.o
-	WCD938X_OBJS += wcd938x-tables.o
-	WCD938X_OBJS += wcd938x-mbhc.o
-	WCD938X_OBJS += send_data_to_xlog.o
+# for mmhardware detection
+ifneq ($(filter y, $(CONFIG_BOARD_DAGU) $(CONFIG_BOARD_PIPA)),)
+MMHARDWARE_OBJS += mmhardware_sysfs.o
 endif
 
-ifdef CONFIG_SND_SOC_WCD938X_SLAVE
-	WCD938X_SLAVE_OBJS += wcd938x-slave.o
-endif
+LINUX_INC += -Iinclude/linux
 
-LINUX_INC +=	-Iinclude/linux
-
-INCS +=		$(COMMON_INC) \
-		$(UAPI_INC)
+INCS +=	$(COMMON_INC) \
+	$(UAPI_INC)
 
 EXTRA_CFLAGS += $(INCS)
-
-ifneq ($(filter y, $(CONFIG_BOARD_DAGU) $(CONFIG_BOARD_PIPA)),)
-	CDEFINES += -DCONFIG_MMHARDWARE_DETECTION
-endif
 
 CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-DANI_LITTLE_BIT_ENDIAN \
@@ -82,8 +74,8 @@ CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-DANI_COMPILER_TYPE_GCC \
 		-DANI_OS_TYPE_ANDROID=6 \
 		-DPTT_SOCK_SVC_ENABLE \
-		-Wall\
-		-Werror\
+		-Wall \
+		-Werror \
 		-D__linux__
 
 KBUILD_CPPFLAGS += $(CDEFINES)
@@ -110,11 +102,7 @@ KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/audio-kernel/soc/Module
 endif
 
 # Module information used by KBuild framework
-obj-$(CONFIG_SND_SOC_WCD938X) += wcd938x_dlkm.o
-wcd938x_dlkm-y := $(WCD938X_OBJS)
-
-obj-$(CONFIG_SND_SOC_WCD938X_SLAVE) += wcd938x_slave_dlkm.o
-wcd938x_slave_dlkm-y := $(WCD938X_SLAVE_OBJS)
-
+obj-m    += mmhardware_dlkm.o
+mmhardware_dlkm-y := $(MMHARDWARE_OBJS)
 # inject some build related information
 DEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"
